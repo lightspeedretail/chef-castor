@@ -6,6 +6,10 @@ This cookbook installs and configures [castor](https://github.com/lightspeedreta
 
 Apply ```castor::default``` to a node's run_list.
 
+## Usage - Test kitchen
+
+Copy the ```.kitchen.yml``` example file into ```.kitchen.local.yml``` and modify it to your needs.
+
 ## License and Authors
 
-Author:: lightspeed POS, Inc. (<retailops@lightspeedpos.com>)
+Author:: Jean-Francois Theroux (<jean-francois.theroux@lightspeedpos.com>)
