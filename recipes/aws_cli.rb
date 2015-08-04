@@ -29,5 +29,5 @@ include_recipe 'python::pip'
 python_pip 'awscli'
 
 execute 'create AWS credentials' do
-  command "su castor -c 'castor -a -p #{node['castor']['iam_profile_name']}'"
+  command "su castor -c 'castor -a'"
 end
