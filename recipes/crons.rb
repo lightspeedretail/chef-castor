@@ -34,7 +34,7 @@ ruby_block 'create cron jobs' do
 
     instances.each do |i|
       %w(general slowquery).each do |e|
-        cmd = Chef::Config[:solo] ? "castor -n #{i} -t #{e} -d /var/lib/castor >> /var/log/castor/#{e}.log" : "castor -n #{i} -t #{e} -a -d /var/lib/castor >> /var/log/castor/#{e}.log"
+        cmd = Chef::Config[:solo] ? "castor -n #{i} -t #{e} -d /var/lib/castor >> /var/log/castor/#{e}.log" : "castor -n #{i} -t #{e} -a -p #{node['castor']['iam_profile_name']} -d /var/lib/castor >> /var/log/castor/#{e}.log"
         cron = Chef::Resource::Cron.new("castor_#{i}_#{e}", run_context)
         cron.command(cmd)
         cron.user(node['castor']['user'])
