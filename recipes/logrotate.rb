@@ -27,8 +27,8 @@
 logrotate_app 'castor' do
   cookbook 'logrotate'
   path %w(/var/log/castor/general.log /var/log/castor/error.log /var/log/castor/slowquery.log)
-  options %w(missingok notifempty delaycompress)
+  options %w(missingok notifempty compress nodelaycompress nodateext)
   frequency 'hourly'
-  rotate 24
+  rotate 6
   create '644 castor castor'
 end
