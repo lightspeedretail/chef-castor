@@ -101,6 +101,12 @@ describe 'Directories' do
 end
 
 describe 'Crons' do
+  describe 'hourly logrotate' do
+    describe file('/etc/cron.hourly/logrotate') do
+      it { should be_symlink }
+    end
+  end
+
   crons = [
     '5-55/5 * * * * castor -n core-catalog-master-development -t general -d /var/lib/castor >> /var/log/castor/general.log',
     '5-55/5 * * * * castor -n core-catalog-master-development -t slowquery -d /var/lib/castor >> /var/log/castor/slowquery.log'

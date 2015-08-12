@@ -24,6 +24,10 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+link '/etc/cron.hourly/logrotate' do
+  to '/etc/cron.daily/logrotate'
+end
+
 ruby_block 'create cron jobs' do
   block do
     require 'json'
