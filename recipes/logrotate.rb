@@ -29,6 +29,6 @@ logrotate_app 'castor' do
   path %w(/var/log/castor/general.log /var/log/castor/error.log /var/log/castor/slowquery.log)
   options %w(missingok notifempty compress nodelaycompress nodateext)
   frequency 'hourly'
-  rotate 6
+  rotate 1
   create '644 castor castor'
 end
