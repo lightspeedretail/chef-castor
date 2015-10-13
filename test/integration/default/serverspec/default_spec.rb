@@ -45,7 +45,7 @@ describe 'Installation' do
     end
   end
 
-  %w(deep_merge mixlib-shellout).each do |g|
+  %w(deep_merge mixlib-shellout aws-sdk).each do |g|
     describe package(g) do
       it { should be_installed.by('gem') }
     end
@@ -129,7 +129,7 @@ describe 'Logrotate' do
     it { should contain /\/var\/log\/castor\/slowquery.log/ }
     it { should contain /hourly/ }
     it { should contain /create 644 castor castor/ }
-    it { should contain /rotate 24/ }
+    it { should contain /rotate 1/ }
     it { should contain /missingok/ }
     it { should contain /notifempty/ }
     it { should contain /delaycompress/ }
