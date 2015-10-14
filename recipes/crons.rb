@@ -32,6 +32,9 @@ ruby_block 'create cron jobs' do
   block do
     require 'json'
 
+    # Delete the cron file first, to be sure we don't have old
+    # RDS instances in there.
+    File.delete('/var/spool/cron/castor')
     data = JSON.parse(`sudo su castor -c 'aws rds describe-db-instances'`) # ~FC048
     instances = []
     data['DBInstances'].each { |d| instances << d['DBInstanceIdentifier'] }
