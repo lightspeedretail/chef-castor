@@ -1,4 +1,4 @@
-default['castor']['version'] = '1.0.0'
+default['castor']['version'] = '1.0.1'
 default['castor']['user'] = 'castor'
 default['castor']['group'] = 'castor'
 default['castor']['base_dir'] = '/opt/castor'
