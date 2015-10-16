@@ -31,4 +31,5 @@ logrotate_app 'castor' do
   frequency 'hourly'
   rotate 1
   create '644 castor castor'
+  postrotate node['castor']['logrotate_postrotate'] unless node['castor']['logrotate_postrotate'].nil?
 end
