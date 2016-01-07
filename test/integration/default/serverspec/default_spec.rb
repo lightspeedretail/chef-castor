@@ -1,26 +1,6 @@
 require 'spec_helper'
 
 describe 'Installation' do
-  describe file('/usr/bin/pip'), :if => os[:family] == 'redhat' do
-    it { should be_file }
-    it { should be_mode 755 }
-  end
-
-  describe file('/usr/bin/aws'), :if => os[:family] == 'redhat' do
-    it { should be_file }
-    it { should be_mode 755 }
-  end
-
-  describe file('/usr/local/bin/pip'), :if => os[:family] == 'ubuntu' do
-    it { should be_file }
-    it { should be_mode 755 }
-  end
-
-  describe file('/usr/local/bin/aws'), :if => os[:family] == 'ubuntu' do
-    it { should be_file }
-    it { should be_mode 755 }
-  end
-
   describe user('castor') do
     it { should exist }
     it { should belong_to_group 'castor' }
@@ -83,10 +63,6 @@ describe 'AWS credentials' do
     it { should contain /region=us-east-1/ }
     it { should contain /output=json/ }
   end
-
-  describe command("sudo su castor -c 'aws rds describe-db-log-files --db-instance-identifier core-catalog-master-development'") do
-    its(:exit_status) { should eq 0 }
-  end
 end
 
 describe 'Directories' do
@@ -107,14 +83,9 @@ describe 'Crons' do
     end
   end
 
-  crons = [
-    '5-55/5 * * * * castor -n core-catalog-master-development -t general -d /var/lib/castor >> /var/log/castor/general.log',
-    '5-55/5 * * * * castor -n core-catalog-master-development -t slowquery -d /var/lib/castor >> /var/log/castor/slowquery.log'
-  ]
-  crons.each do |c|
-    describe cron do
-      it { should have_entry(c).with_user('castor') }
-    end
+  # Will exit 1 if the crontab's empty
+  describe command('crontab -l -u castor') do
+    its(:exit_status) { should eq 0 }
   end
 end
 
