@@ -26,7 +26,6 @@
 
 include_recipe 'castor::user'
 include_recipe 'castor::install'
-include_recipe 'castor::aws_cli'
 
 %w(/var/log/castor /var/lib/castor).each do |dir|
   directory dir do

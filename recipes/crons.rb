@@ -24,24 +24,51 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+execute 'create AWS credentials' do
+  command "su castor -c 'castor -a -p #{node['castor']['iam_profile_name']}'"
+end
+
 link '/etc/cron.hourly/logrotate' do
   to '/etc/cron.daily/logrotate'
 end
 
+chef_gem 'aws-sdk' do
+end.run_action(:install)
+
 ruby_block 'create cron jobs' do
   block do
+    require 'aws-sdk'
     require 'json'
+
+    rds = Aws::RDS::Client.new(:region => node['castor']['aws']['region'])
 
     # Delete the cron file first, to be sure we don't have old
     # RDS instances in there.
     File.delete('/var/spool/cron/castor') if File.exist?('/var/spool/cron/castor')
-    data = JSON.parse(`sudo su castor -c 'aws rds describe-db-instances'`) # ~FC048
+
+    results = []
+    marker = nil
+    finished = false
+    sleep_duration = 10
+    until finished
+      begin
+        data = rds.describe_db_instances(:marker => marker)
+        results.concat(data.db_instances)
+        marker = data.marker
+        finished = marker.nil?
+      rescue Aws::RDS::Errors::Throttling
+        sleep(sleep_duration)
+        sleep_duration += 5
+        retry
+      end
+    end
+
     instances = []
-    data['DBInstances'].each { |d| instances << d['DBInstanceIdentifier'] }
+    results.each { |d| instances << d['db_instance_identifier'] }
 
     instances.each do |i|
       %w(general slowquery).each do |e|
-        cmd = Chef::Config[:solo] ? "castor -n #{i} -t #{e} -d /var/lib/castor >> /var/log/castor/#{e}.log" : "castor -n #{i} -t #{e} -a -p #{node['castor']['iam_profile_name']} -d /var/lib/castor >> /var/log/castor/#{e}.log"
+        cmd = Chef::Config[:solo] ? "castor -n #{i} -t #{e} -d /var/lib/castor >> /var/log/castor/#{e}.log" : "castor -n #{i} -t #{e} -a -p #{node['castor']['iam_profile_name']} -d /var/lib/castor >> /var/log/castor/#{e}.log" # rubocop:disable Metrics/LineLength
         cron = Chef::Resource::Cron.new("castor_#{i}_#{e}", run_context)
         cron.command(cmd)
         cron.user(node['castor']['user'])
