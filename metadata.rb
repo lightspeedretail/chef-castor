@@ -4,7 +4,7 @@ maintainer_email 'retailops@lightspeedpos.com'
 license          'MIT'
 description      'Installs/Configures castor'
 long_description 'Installs/Configures castor'
-version          '0.5.0'
+version          '0.5.1'
 
 depends          'python', '>= 0.9.0'
 depends          'logrotate', '>= 1.7.0'
