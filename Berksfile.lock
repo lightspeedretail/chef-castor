@@ -5,7 +5,7 @@ DEPENDENCIES
 
 GRAPH
   build-essential (2.2.3)
-  castor (0.5.1)
+  castor (0.6.0)
     logrotate (>= 1.7.0)
     python (>= 0.9.0)
   logrotate (1.9.1)
