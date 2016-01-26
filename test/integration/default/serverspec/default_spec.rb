@@ -87,6 +87,10 @@ describe 'Crons' do
   describe command('crontab -l -u castor') do
     its(:exit_status) { should eq 0 }
   end
+
+  describe command("crontab -l -u castor | grep 'nice -n 0'") do
+    its(:exit_status) { should eq 0 }
+  end
 end
 
 describe 'Logrotate' do

@@ -1,0 +1,17 @@
+DEPENDENCIES
+  castor
+    path: .
+    metadata: true
+
+GRAPH
+  build-essential (2.2.3)
+  castor (0.5.1)
+    logrotate (>= 1.7.0)
+    python (>= 0.9.0)
+  logrotate (1.9.1)
+  python (1.4.6)
+    build-essential (>= 0.0.0)
+    yum-epel (>= 0.0.0)
+  yum (3.6.0)
+  yum-epel (0.6.0)
+    yum (~> 3.0)
