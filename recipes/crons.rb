@@ -67,7 +67,7 @@ ruby_block 'create cron jobs' do # ~FC014
     results.each { |d| instances << d['db_instance_identifier'] }
 
     instances.each do |i|
-      %w(general slowquery).each do |e|
+      node['castor']['logs_to_process'].each do |e|
         cmd = Chef::Config[:solo] ? "nice -n 0 castor -n #{i} -t #{e} -d /var/lib/castor >> /var/log/castor/#{e}.log" : "nice -n 0 castor -n #{i} -t #{e} -a -p #{node['castor']['iam_profile_name']} -d /var/lib/castor >> /var/log/castor/#{e}.log" # rubocop:disable Metrics/LineLength
         cron = Chef::Resource::Cron.new("castor_#{i}_#{e}", run_context)
         cron.command(cmd)
