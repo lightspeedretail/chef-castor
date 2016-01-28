@@ -39,3 +39,10 @@ suites:
   - name: default
     run_list:
       - recipe[castor]
+
+  - name: only_slowquery
+    run_list:
+      - recipe[castor]
+    attributes:
+      castor:
+        logs_to_process: ['slowquery']
