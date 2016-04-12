@@ -73,6 +73,7 @@ ruby_block 'create cron jobs' do # ~FC014
         cron.command(cmd)
         cron.user(node['castor']['user'])
         cron.minute('5-55/5')
+        cron.mailto(node['castor']['mailto'])
         cron.run_action :create
       end
     end
