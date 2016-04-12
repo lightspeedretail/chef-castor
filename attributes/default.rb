@@ -6,3 +6,4 @@ default['castor']['iam_profile_name'] = 'aws-rds-readonly-download-logs-role'
 default['castor']['logrotate_postrotate'] = '/etc/init.d/logstash-forwarder restart'
 default['castor']['aws']['region'] = 'us-east-1'
 default['castor']['logs_to_process'] = %w(general slowquery)
+default['castor']['mailto'] = '/dev/null'
