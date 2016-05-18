@@ -16,11 +16,12 @@ Metrics/CyclomaticComplexity:
 Metrics/PerceivedComplexity:
   Enabled: false
 
-Style/SingleSpaceBeforeFirstArg:
-  Enabled: false
-
 Lint/AmbiguousRegexpLiteral:
   Enabled: false
 
 Style/RegexpLiteral:
   Enabled: false
+
+AllCops:
+  Exclude:
+    - 'Vagrantfile'
