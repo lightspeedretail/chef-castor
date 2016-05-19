@@ -32,49 +32,66 @@ link '/etc/cron.hourly/logrotate' do
   to '/etc/cron.daily/logrotate'
 end
 
-chef_gem 'aws-sdk' do
-end.run_action(:install)
+Chef::Resource::Cron.send(:include, Castor::Helper)
 
-ruby_block 'create cron jobs' do # ~FC014
-  block do
-    require 'aws-sdk'
-    require 'json'
+if node['castor']['rds_instances'].empty?
+  # Make cron jobs dynamically
+  chef_gem 'aws-sdk' do
+  end.run_action(:install)
 
-    rds = Aws::RDS::Client.new(:region => node['castor']['aws']['region'])
+  ruby_block 'create cron jobs' do # ~FC014
+    block do
+      require 'aws-sdk'
+      require 'json'
 
-    # Delete the cron file first, to be sure we don't have old
-    # RDS instances in there.
-    File.delete('/var/spool/cron/castor') if File.exist?('/var/spool/cron/castor')
+      rds = Aws::RDS::Client.new(:region => node['castor']['aws']['region'])
 
-    results = []
-    marker = nil
-    finished = false
-    sleep_duration = 10
-    until finished
-      begin
-        data = rds.describe_db_instances(:marker => marker)
-        results.concat(data.db_instances)
-        marker = data.marker
-        finished = marker.nil?
-      rescue Aws::RDS::Errors::Throttling
-        sleep(sleep_duration)
-        sleep_duration += 5
-        retry
+      # Delete the cron file first, to be sure we don't have old
+      # RDS instances in there.
+      File.delete('/var/spool/cron/castor') if File.exist?('/var/spool/cron/castor')
+
+      results = []
+      marker = nil
+      finished = false
+      sleep_duration = 10
+      until finished
+        begin
+          data = rds.describe_db_instances(:marker => marker)
+          results.concat(data.db_instances)
+          marker = data.marker
+          finished = marker.nil?
+        rescue Aws::RDS::Errors::Throttling
+          sleep(sleep_duration)
+          sleep_duration += 5
+          retry
+        end
+      end
+
+      instances = []
+      results.each { |d| instances << d['db_instance_identifier'] }
+
+      instances.each do |i|
+        node['castor']['logs_to_process'].each do |e|
+          cron = Chef::Resource::Cron.new("castor_#{i}_#{e}", run_context)
+          cron.command(Castor::Helper.create_cron_command(node['castor']['aws']['region'], e, i, node['castor']['iam_profile_name']))
+          cron.user(node['castor']['user'])
+          cron.minute(node['castor']['cron_minute'])
+          cron.mailto(node['castor']['mailto'])
+          cron.run_action :create
+        end
       end
     end
-
-    instances = []
-    results.each { |d| instances << d['db_instance_identifier'] }
-
-    instances.each do |i|
-      node['castor']['logs_to_process'].each do |e|
-        cmd = Chef::Config[:solo] ? "nice -n 0 castor -r #{node['castor']['aws']['region']} -n #{i} -t #{e} -d /var/lib/castor >> /var/log/castor/#{e}.log" : "nice -n 0 castor -r #{node['castor']['aws']['region']} -n #{i} -t #{e} -a -p #{node['castor']['iam_profile_name']} -d /var/lib/castor >> /var/log/castor/#{e}.log" # rubocop:disable Metrics/LineLength
-        cron = Chef::Resource::Cron.new("castor_#{i}_#{e}", run_context)
-        cron.command(cmd)
-        cron.user(node['castor']['user'])
-        cron.minute('5-55/5')
-        cron.mailto(node['castor']['mailto'])
-        cron.run_action :create
+  end
+else
+  # Make cron jobs based on the defined attributes
+  node['castor']['rds_instances'].each do |instance_config|
+    instance_config['logs'].each do |log|
+      cron "castor_#{instance_config['name']}_#{log}" do
+        command Castor::Helper.create_cron_command(node['castor']['aws']['region'], log, instance_config['name'], node['castor']['iam_profile_name'])
+        user node['castor']['user']
+        minute node['castor']['cron_minute']
+        mailto node['castor']['mailto']
+        action instance_config['action']
       end
     end
   end
