@@ -66,7 +66,7 @@ if node['castor']['rds_instances'].empty?
       instances.each do |i|
         node['castor']['logs_to_process'].each do |e|
           cron = Chef::Resource::Cron.new("castor_#{i}_#{e}", run_context)
-          cron.command("castor -i #{i} -t #{e} -r #{node['castor']['aws']['region']} >> /var/log/castor/#{i}.#{e}.log")
+          cron.command("nice -n 0 castor -i #{i} -t #{e} -r #{node['castor']['aws']['region']} >> /var/log/castor/#{i}.#{e}.log")
           cron.user(node['castor']['user'])
           cron.minute(node['castor']['cron_minute'])
           cron.mailto(node['castor']['mailto'])
@@ -80,7 +80,7 @@ else
   node['castor']['rds_instances'].each do |instance_config|
     instance_config['logs'].each do |log|
       cron "castor_#{instance_config['name']}_#{log}" do
-        command "castor -i #{instance_config['name']} -t #{log} -r #{node['castor']['aws']['region']} >> /var/log/castor/#{instance_config['name']}.#{log}.log"
+        command "nice -n 0 castor -i #{instance_config['name']} -t #{log} -r #{node['castor']['aws']['region']} >> /var/log/castor/#{instance_config['name']}.#{log}.log"
         user node['castor']['user']
         minute node['castor']['cron_minute']
         mailto node['castor']['mailto']
