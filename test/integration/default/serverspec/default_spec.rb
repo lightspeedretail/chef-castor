@@ -25,7 +25,7 @@ describe 'Installation' do
     end
   end
 
-  %w(deep_merge mixlib-shellout aws-sdk).each do |g|
+  %w(deep_merge mixlib-cli aws-sdk).each do |g|
     describe package(g) do
       it { should be_installed.by('gem') }
     end
@@ -33,35 +33,6 @@ describe 'Installation' do
 
   describe command('castor -h') do
     its(:exit_status) { should eq 0 }
-  end
-end
-
-describe 'AWS credentials' do
-  describe file('/opt/castor/.aws') do
-    it { should be_directory }
-    it { should be_mode 700 }
-    it { should be_owned_by 'castor' }
-    it { should be_grouped_into 'castor' }
-  end
-
-  describe file('/opt/castor/.aws/credentials') do
-    it { should be_file }
-    it { should be_mode 600 }
-    it { should be_owned_by 'castor' }
-    it { should be_grouped_into 'castor' }
-    it { should contain /[default]/ }
-    it { should contain /aws_access_key_id/ }
-    it { should contain /aws_secret_access_key/ }
-  end
-
-  describe file('/opt/castor/.aws/config') do
-    it { should be_file }
-    it { should be_mode 600 }
-    it { should be_owned_by 'castor' }
-    it { should be_grouped_into 'castor' }
-    it { should contain /[default]/ }
-    it { should contain /region=us-east-1/ }
-    it { should contain /output=json/ }
   end
 end
 
@@ -99,9 +70,7 @@ describe 'Logrotate' do
     it { should be_mode 440 }
     it { should be_owned_by 'root' }
     it { should be_grouped_into 'root' }
-    it { should contain /\/var\/log\/castor\/general.log/ }
-    it { should contain /\/var\/log\/castor\/error.log/ }
-    it { should contain /\/var\/log\/castor\/slowquery.log/ }
+    it { should contain /\/var\/log\/castor\/*.log/ }
     it { should contain /hourly/ }
     it { should contain /create 644 castor castor/ }
     it { should contain /rotate 1/ }

@@ -40,4 +40,4 @@ link '/usr/bin/castor' do
 end
 
 package 'ruby'
-%w(deep_merge mixlib-shellout aws-sdk).each { |pkg| gem_package pkg }
+%w(deep_merge mixlib-cli aws-sdk).each { |pkg| gem_package pkg }

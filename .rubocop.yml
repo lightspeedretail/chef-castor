@@ -22,6 +22,9 @@ Lint/AmbiguousRegexpLiteral:
 Style/RegexpLiteral:
   Enabled: false
 
+Style/SingleSpaceBeforeFirstArg:
+  Enabled: false
+
 AllCops:
   Exclude:
     - 'Vagrantfile'
