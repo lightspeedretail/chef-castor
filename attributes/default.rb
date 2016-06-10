@@ -1,11 +1,11 @@
-default['castor']['version'] = '1.0.4'
+default['castor']['version'] = '2.0.2'
 default['castor']['user'] = 'castor'
 default['castor']['group'] = 'castor'
 default['castor']['base_dir'] = '/opt/castor'
 default['castor']['iam_profile_name'] = 'aws-rds-readonly-download-logs-role'
 default['castor']['logrotate_postrotate'] = '/etc/init.d/logstash-forwarder restart'
 default['castor']['aws']['region'] = 'us-east-1'
-default['castor']['logs_to_process'] = %w(general slowquery)
+default['castor']['logs_to_process'] = %w(general slowquery error)
 default['castor']['rds_instances'] = []
 default['castor']['mailto'] = '/dev/null'
 default['castor']['cron_minute'] = '5-55/5'

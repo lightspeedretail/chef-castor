@@ -24,18 +24,11 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-execute 'create AWS credentials' do
-  command "su castor -c 'castor -a -p #{node['castor']['iam_profile_name']}'"
-end
-
 link '/etc/cron.hourly/logrotate' do
   to '/etc/cron.daily/logrotate'
 end
 
-Chef::Resource::Cron.send(:include, Castor::Helper)
-
 if node['castor']['rds_instances'].empty?
-  # Make cron jobs dynamically
   chef_gem 'aws-sdk' do
   end.run_action(:install)
 
@@ -73,7 +66,7 @@ if node['castor']['rds_instances'].empty?
       instances.each do |i|
         node['castor']['logs_to_process'].each do |e|
           cron = Chef::Resource::Cron.new("castor_#{i}_#{e}", run_context)
-          cron.command(Castor::Helper.create_cron_command(node['castor']['aws']['region'], e, i, node['castor']['iam_profile_name']))
+          cron.command("castor -i #{i} -t #{e} -r #{node['castor']['aws']['region']} >> /var/log/castor/#{i}.#{e}.log")
           cron.user(node['castor']['user'])
           cron.minute(node['castor']['cron_minute'])
           cron.mailto(node['castor']['mailto'])
@@ -87,7 +80,7 @@ else
   node['castor']['rds_instances'].each do |instance_config|
     instance_config['logs'].each do |log|
       cron "castor_#{instance_config['name']}_#{log}" do
-        command Castor::Helper.create_cron_command(node['castor']['aws']['region'], log, instance_config['name'], node['castor']['iam_profile_name'])
+        command "castor -i #{instance_config['name']} -t #{log} -r #{node['castor']['aws']['region']} >> /var/log/castor/#{instance_config['name']}.#{log}.log"
         user node['castor']['user']
         minute node['castor']['cron_minute']
         mailto node['castor']['mailto']
