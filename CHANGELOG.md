@@ -1,3 +1,7 @@
+# 1.0.3
+
+Removed un necessary interpolation
+
 # 1.0.2
 
 Set aws-sdk gem to version 2.6.32
