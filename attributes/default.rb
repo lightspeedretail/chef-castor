@@ -9,3 +9,4 @@ default['castor']['logs_to_process'] = %w(general slowquery error)
 default['castor']['rds_instances'] = []
 default['castor']['mailto'] = '/dev/null'
 default['castor']['cron_minute'] = '5-55/5'
+default['castor']['aws-sdk-version'] = '2.6.32'

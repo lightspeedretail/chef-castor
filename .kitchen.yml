@@ -4,18 +4,19 @@ driver:
   tags:
     Name: kitchen-castor
   iam_profile_name: aws-rds-readonly-download-logs-role
-  subnet_id: subnet-1234
+  subnet_id: subnet-2ca9d775
   shared_credentials_profile: kitchen
   availability_zone: a
-  security_group_ids: ['sg-1234', 'sg-1234', 'sg-1234', 'sg-1234']
+  security_group_ids: ['sg-f7fa1891']
   instance_type: t2.micro
   require_chef_omnibus: true
   associate_public_ip: true
-  aws_ssh_key_id: deploy_key
+  aws_ssh_key_id: ls.deployer
   block_device_mappings:
-    - ebs_device_name: /dev/sda1
-      ebs_volume_size: 8
-      ebs_delete_on_termination: true
+    - device_name: /dev/sda1
+      ebs:
+        volume_size: 8
+        delete_on_termination: true
 
 provisioner:
   name: chef_solo
@@ -25,15 +26,17 @@ platforms:
     driver:
       image_id: ami-96a818fe
     transport:
+      name: sftp
       username: centos
-      ssh_key: ~/.ssh/id_rsa
+      ssh_key: ~/.ssh/deployer
 
   - name: ubuntu-14.04
     driver:
       image_id: ami-86562dee
     transport:
+      name: sftp
       username: ubuntu
-      ssh_key: ~/.ssh/id_rsa
+      ssh_key: ~/.ssh/deployer
 
 suites:
   - name: default

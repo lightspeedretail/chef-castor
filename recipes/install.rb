@@ -40,4 +40,9 @@ link '/usr/bin/castor' do
 end
 
 package 'ruby'
-%w(deep_merge mixlib-cli aws-sdk).each { |pkg| gem_package pkg }
+%w(deep_merge mixlib-cli).each { |pkg| gem_package pkg }
+
+gem_package 'aws-sdk' do
+  action :upgrade
+  version "#{node['castor']['aws-sdk-version']}"
+end

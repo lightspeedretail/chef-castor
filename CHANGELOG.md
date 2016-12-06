@@ -1,3 +1,7 @@
+# 1.0.2
+
+Set aws-sdk gem to version 2.6.32
+
 # 1.0.1
 
 Use castor v2.0.3
