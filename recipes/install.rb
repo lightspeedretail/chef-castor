@@ -44,5 +44,5 @@ package 'ruby'
 
 gem_package 'aws-sdk' do
   action :upgrade
-  version "#{node['castor']['aws-sdk-version']}"
+  version node['castor']['aws-sdk-version']
 end
